@@ -1,11 +1,12 @@
 /**
  * Compare 2 semantic versioning strings and returns the one with
  * higher precedence.
- * @param  {String} v1 The first semantic versioning string
- * @param  {String} v2 The second semantic versioning string
- * @return {String}    The semantic versioning string with higher precedence
+ * @param  {String} v1     The first semantic versioning string
+ * @param  {String} v2     The second semantic versioning string
+ * @param  {String} locale A BCP 47 language tag
+ * @return {String}        The semantic versioning string with higher precedence
  */
-function compareVersions(v1, v2) {
+function compareVersions(v1, v2, locale = 'en') {
 	if (!isValidVersionType(v1) || !isValidVersionType(v2)) {
 		return 'Invalid version type';
 	}
@@ -20,7 +21,7 @@ function compareVersions(v1, v2) {
 	const [coreVersion1, preReleaseVersion1 = ''] = fullVersion1;
 	const [coreVersion2, preReleaseVersion2 = ''] = fullVersion2;
 	
-	let coreVersionResult = compareCoreVersions(coreVersion1, coreVersion2);
+	let coreVersionResult = compare(coreVersion1, coreVersion2, locale);
 	
 	switch (coreVersionResult) {
 		// version 1 has higher core version
@@ -31,7 +32,8 @@ function compareVersions(v1, v2) {
 			return v2;
 		// both versions have the same core version, need to compare pre-release version
 		case 0:
-			let preReleaseVersionResult = comparePreReleaseVersion(preReleaseVersion1, preReleaseVersion2);
+			// let preReleaseVersionResult = comparePreReleaseVersion(preReleaseVersion1, preReleaseVersion2);
+			let preReleaseVersionResult = compare(preReleaseVersion1, preReleaseVersion2);
 			
 			switch (preReleaseVersionResult) {
 				case 1:
@@ -45,69 +47,42 @@ function compareVersions(v1, v2) {
 }
 
 /**
- * Compare the core version portion of the semantic versioning strings and return
+ * Compare the core or pre-release portion of the semantic versioning strings and return
  * the result.
- * @param  {String} coreVersion1 The first semantic versioning core version string
- * @param  {String} coreVersion2 The second semantic versioning core version string
- * @return {Number}              The comparison result (1 meaning the first string has
- *                               the higher precedence, -1 meaning the second string has
- *                               has the higher precedence, and 0 meaning both strings 
- *                               have equal precedence.
+ * @param  {String} v1       The first semantic versioning core or pre-release version string
+ * @param  {String} v2       The second semantic versioning core or pre-release version string
+ * @param  {String} locale	 A BCP 47 language tag
+ * @return {Number}          The comparison result (1 meaning the first string has
+ *                           the higher precedence, -1 meaning the second string has
+ *                           has the higher precedence, and 0 meaning both strings 
+ *                           have equal precedence.
  */
-function compareCoreVersions(coreVersion1, coreVersion2) {
-	const v1Parts = coreVersion1.split('.');
-	const v2Parts = coreVersion2.split('.');
-	
-	for (var i = 0; i < v1Parts.length; ++i) {		
-		if (v1Parts[i] === v2Parts[i]) {
-			continue;
-		}
-		else if (v1Parts[i] > v2Parts[i]) {
-			return 1;
-		}
-		else {
-			return -1;
-		}		
-	}
-	
-	return 0;
-}
-
-/**
- * Compare the pre-release portion of the semantic versioning strings and return
- * the result.
- * @param  {String} preReleaseVersion1 The first semantic versioning pre-release version string
- * @param  {String} preReleaseVersion1 The second semantic versioning pre-release version string
- * @return {Number}                    The comparison result (1 meaning the first string has
- *                                     the higher precedence, -1 meaning the second string has
- *                                     has the higher precedence, and 0 meaning both strings 
- *                                     have equal precedence.
- */
-function comparePreReleaseVersion(preReleaseVersion1, preReleaseVersion2) {
-	if (preReleaseVersion1 === '' && preReleaseVersion2 === '') {
+function compare(v1, v2, locale) {
+	if (v1 === '' && v2 === '') {
 		return 1;
-	} else if (preReleaseVersion1 === '' && preReleaseVersion2) {
+	} else if (v1 === '' && v2) {
 		return 1;
-	} else if (preReleaseVersion1 && preReleaseVersion2 === '') {
+	} else if (v1 && v2 === '') {
 		return -1;
 	} else {
-		const preReleaseVersion1Parts = preReleaseVersion1.split('.');
-		const preReleaseVersion2Parts = preReleaseVersion2.split('.');
+		const v1Parts = v1.split('.');
+		const v2Parts = v2.split('.');
 		
-		var maxLength = Math.max(preReleaseVersion1Parts.length, preReleaseVersion2Parts.length);
+		var maxLength = Math.max(v1Parts.length, v2Parts.length);
 		
 		for (var i = 0; i < maxLength; ++i) {
-			preReleaseVersion1Parts[i] = preReleaseVersion1Parts[i] === undefined ? '' : preReleaseVersion1Parts[i];
-			preReleaseVersion2Parts[i] = preReleaseVersion2Parts[i] === undefined ? '' : preReleaseVersion2Parts[i];
+			v1Parts[i] = v1Parts[i] === undefined ? '' : v1Parts[i];
+			v2Parts[i] = v2Parts[i] === undefined ? '' : v2Parts[i];
 			
-			if (preReleaseVersion1Parts[i] === preReleaseVersion2Parts[i]) {
+			if (v1Parts[i] === v2Parts[i]) {
 				continue;
-			} else if (preReleaseVersion1Parts[i].localeCompare(preReleaseVersion2Parts[i]) === 1)  {
+			} else if (v1Parts[i].localeCompare(v2Parts[i], locale, {numeric: true}) === 1)  {
 				return 1;
 			} else {
 				return -1;
 			}
 		}		
+		
 		return 0;
 	}
 }

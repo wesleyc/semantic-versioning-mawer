@@ -21,12 +21,14 @@ describe('version validation', () => {
 
 describe('compareVersions function test', () => {
 	each([
+		{v1: '1.0.0', v2: '1.0.0', expected: '1.0.0'},
 		{v1: '1.0.0', v2: '2.0.0', expected: '2.0.0'},
 		{v1: '2.0.0', v2: '1.0.0', expected: '2.0.0'},
 		{v1: '2.0.0', v2: '2.1.0', expected: '2.1.0'},
 		{v1: '2.1.0', v2: '2.0.0', expected: '2.1.0'},
 		{v1: '2.1.0', v2: '2.1.1', expected: '2.1.1'},
 		{v1: '2.1.1', v2: '2.1.0', expected: '2.1.1'},
+		{v1: '3.25.1', v2: '3.3.0', expected: '3.25.1'},
 		{v1: '1.0.0', v2: '1.0.0-alpha', expected: '1.0.0'},
 		{v1: '1.0.0', v2: '1.0.0-beta', expected: '1.0.0'},
 		{v1: '1.0.0', v2: '1.0.0-rc', expected: '1.0.0'},
