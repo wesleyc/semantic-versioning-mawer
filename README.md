@@ -17,7 +17,7 @@ npm install
 ```javascript
 const compareVersions = require("./index");
 
-# return '1.0.0' 
+# returns '1.0.0' 
 compareVersions('1.0.0', '1.0.0')
 
 # returns '2.0.0'
