@@ -1,9 +1,16 @@
 {
+	"name": "semantic-versioning-mawer",
+	"description": "javascript library that compares two semantic versioning strings",
+	"version": "1.0.0",
+	"scripts": {
+    "test": "jest"
+  },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wesleyc/semantic-versioning-mawer.git"
+	},
   "devDependencies": {
     "jest": "^27.4.3",
     "jest-each": "^27.4.2"
-  },
-  "scripts": {
-    "test": "jest"
   }
 }
